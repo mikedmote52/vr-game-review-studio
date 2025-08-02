@@ -738,16 +738,19 @@ def is_this_week(timestamp_str):
     except:
         return False
 
+# Always configure the app, even if not running as main
+print("🎮 VR Game Review Studio starting...")
+print("📝 Young reviewer-friendly interface ready!")
+print("🔍 Game research tools loaded")
+print("🤖 AI analysis systems initialized")
+print("🛡️ Safety systems active")
+
+# Use environment variables for deployment
+host = os.getenv('FLASK_HOST', '0.0.0.0')  # Changed to 0.0.0.0 for Render
+port = int(os.getenv('FLASK_PORT', 10000))  # Render uses port 10000 by default
+debug = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'
+
+print(f"Configured to run on {host}:{port} (debug={debug})")
+
 if __name__ == '__main__':
-    print("🎮 VR Game Review Studio starting...")
-    print("📝 Young reviewer-friendly interface ready!")
-    print("🔍 Game research tools loaded")
-    print("🤖 AI analysis systems initialized")
-    print("🛡️ Safety systems active")
-    
-    # Use environment variables for deployment
-    host = os.getenv('FLASK_HOST', 'localhost')
-    port = int(os.getenv('FLASK_PORT', 5000))
-    debug = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'
-    
     app.run(host=host, port=port, debug=debug)

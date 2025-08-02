@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: vr-game-review-studio
+    runtime: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "cd web_interface && python app.py"
+    envVars:
+      - key: FLASK_HOST
+        value: 0.0.0.0
+      - key: FLASK_PORT
+        value: 10000
+      - key: FLASK_DEBUG
+        value: False
+      - key: PYTHON_VERSION
+        value: 3.11.0
