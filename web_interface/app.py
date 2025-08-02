@@ -697,4 +697,9 @@ if __name__ == '__main__':
     print("🤖 AI analysis systems initialized")
     print("🛡️ Safety systems active")
     
-    app.run(host='localhost', port=5000, debug=True)
+    # Use environment variables for deployment
+    host = os.getenv('FLASK_HOST', 'localhost')
+    port = int(os.getenv('FLASK_PORT', 5000))
+    debug = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'
+    
+    app.run(host=host, port=port, debug=debug)
