@@ -1,0 +1,406 @@
+{
+  "template_name": "Comprehensive VR Game Review - 15 Minutes",
+  "template_version": "1.0",
+  "target_audience": "13-year-old VR game reviewer creating educational content",
+  "educational_focus": "Complete game analysis for informed decision-making",
+  "estimated_duration": "12-18 minutes",
+  "complexity_level": "intermediate",
+  "platform_optimization": {
+    "youtube": {
+      "format": "long_form_educational",
+      "title_format": "Complete VR Review: {game_name} - Worth Your Money?",
+      "thumbnail_style": "split_screen_gameplay_and_reviewer",
+      "description_template": "Complete review of {game_name} covering gameplay, graphics, comfort, value, and more! Everything you need to know before buying this VR game.",
+      "chapters_enabled": true,
+      "seo_keywords": ["VR game review", "virtual reality", "{game_name}", "buying guide"]
+    },
+    "tiktok": {
+      "format": "highlight_compilation",
+      "extract_segments": ["best_moments", "verdict", "price_opinion"],
+      "max_duration": "3_minutes"
+    },
+    "instagram": {
+      "format": "comprehensive_story_series",
+      "segments": 8,
+      "includes_highlights": true
+    }
+  },
+  "detailed_review_structure": {
+    "1_introduction_and_overview": {
+      "duration": "60-90 seconds",
+      "content_sections": {
+        "greeting_and_hook": [
+          "Energetic greeting",
+          "Quick teaser of final verdict",
+          "What makes this review special"
+        ],
+        "game_introduction": [
+          "Game name and developer",
+          "Release date and platforms",
+          "Genre and basic concept",
+          "Price point and where to buy"
+        ],
+        "reviewer_context": [
+          "Hours played before review",
+          "VR experience level",
+          "Similar games played for comparison"
+        ]
+      },
+      "educational_value": "Sets proper context and expectations for comprehensive analysis"
+    },
+    "2_gameplay_deep_dive": {
+      "duration": "180-240 seconds",
+      "content_sections": {
+        "core_mechanics": [
+          "What you actually DO in the game",
+          "Primary gameplay loop",
+          "Learning curve and difficulty",
+          "Variety of activities available"
+        ],
+        "vr_implementation": [
+          "Hand tracking vs controller usage",
+          "Room scale vs seated play options",
+          "Physics interactions quality",
+          "Immersion level and presence"
+        ],
+        "progression_systems": [
+          "Character or skill progression",
+          "Unlockables and rewards",
+          "Replay value and content amount",
+          "End-game content availability"
+        ]
+      },
+      "visual_requirements": [
+        "Show diverse gameplay examples",
+        "Demonstrate VR interactions",
+        "Include challenging and easy moments",
+        "Display progression systems"
+      ],
+      "educational_value": "Comprehensive understanding of game mechanics and VR implementation"
+    },
+    "3_technical_analysis": {
+      "duration": "120-180 seconds",
+      "content_sections": {
+        "graphics_and_visuals": [
+          "Art style and aesthetic appeal",
+          "Visual fidelity and detail level",
+          "Performance optimization",
+          "Comparison to similar VR games"
+        ],
+        "audio_design": [
+          "Spatial audio implementation",
+          "Music and sound effects quality",
+          "Voice acting (if applicable)",
+          "Audio contribution to immersion"
+        ],
+        "performance_metrics": [
+          "Frame rate stability",
+          "Loading times",
+          "System requirements reality check",
+          "Optimization across different VR headsets"
+        ]
+      },
+      "technical_vocabulary_explanations": [
+        "Frame rate impact on VR comfort",
+        "What spatial audio means",
+        "Why performance matters in VR",
+        "System requirements breakdown"
+      ],
+      "educational_value": "Technical literacy and understanding of VR technology"
+    },
+    "4_comfort_and_accessibility": {
+      "duration": "90-120 seconds",
+      "content_sections": {
+        "motion_sickness_assessment": [
+          "Personal motion sickness experience (1-10 scale)",
+          "Comfort options available",
+          "Movement types and intensity",
+          "Recommended for VR beginners?"
+        ],
+        "physical_requirements": [
+          "Space requirements for optimal play",
+          "Standing vs sitting options",
+          "Physical exertion level",
+          "Accessibility considerations"
+        ],
+        "comfort_features": [
+          "Teleportation vs smooth locomotion",
+          "Comfort settings available",
+          "Break reminders or session limits",
+          "Visual comfort options"
+        ]
+      },
+      "safety_education": [
+        "Importance of comfort settings",
+        "How to recognize motion sickness",
+        "Taking appropriate breaks",
+        "Setting up safe play space"
+      ],
+      "educational_value": "VR safety awareness and comfort optimization"
+    },
+    "5_content_and_story": {
+      "duration": "120-150 seconds",
+      "content_sections": {
+        "narrative_elements": [
+          "Story quality and engagement (if applicable)",
+          "Character development",
+          "World building and atmosphere",
+          "Narrative pacing"
+        ],
+        "content_volume": [
+          "Main campaign length",
+          "Side content and extras",
+          "Replay value assessment",
+          "Regular updates or DLC"
+        ],
+        "age_appropriateness": [
+          "Content rating justification",
+          "Themes and subject matter",
+          "Violence or mature content level",
+          "Educational or positive messaging"
+        ]
+      },
+      "spoiler_management": [
+        "Clear spoiler warnings",
+        "Focus on early game content",
+        "Discuss themes without plot details",
+        "Respect viewer experience"
+      ],
+      "educational_value": "Content evaluation and media literacy"
+    },
+    "6_comparison_and_context": {
+      "duration": "90-120 seconds",
+      "content_sections": {
+        "genre_comparison": [
+          "How it compares to similar VR games",
+          "What it does better than competitors",
+          "Areas where others excel",
+          "Unique selling points"
+        ],
+        "value_proposition": [
+          "Price vs content amount",
+          "Quality vs cost analysis",
+          "Best alternatives at different price points",
+          "Long-term value assessment"
+        ],
+        "target_audience_fit": [
+          "Best suited for which type of gamer",
+          "VR experience level recommendations",
+          "Interest/hobby alignment",
+          "Social vs solo gaming preference"
+        ]
+      },
+      "context_building": [
+        "Where this fits in VR gaming landscape",
+        "Developer's previous work",
+        "Industry trends it represents",
+        "Future potential and updates"
+      ],
+      "educational_value": "Critical thinking and comparative analysis skills"
+    },
+    "7_pros_and_cons_breakdown": {
+      "duration": "120-150 seconds",
+      "content_sections": {
+        "major_strengths": [
+          "Top 3-4 things the game does exceptionally well",
+          "Unique VR innovations or implementations",
+          "Standout moments or experiences",
+          "Technical or design achievements"
+        ],
+        "areas_for_improvement": [
+          "Main weaknesses or limitations",
+          "Missing features or content",
+          "Technical issues encountered",
+          "Design choices that don't work well"
+        ],
+        "dealbreakers_vs_minor_issues": [
+          "What issues are game-breaking",
+          "What can be overlooked",
+          "What might be fixed in updates",
+          "Personal preference vs objective flaws"
+        ]
+      },
+      "balanced_perspective": [
+        "Acknowledge different player preferences",
+        "Separate personal taste from objective assessment",
+        "Consider multiple viewpoints",
+        "Explain reasoning behind opinions"
+      ],
+      "educational_value": "Critical analysis and balanced evaluation skills"
+    },
+    "8_final_verdict_and_recommendations": {
+      "duration": "90-120 seconds",
+      "content_sections": {
+        "overall_rating": [
+          "Final score with clear justification",
+          "Rating breakdown by category",
+          "Comparison to reviewer's other scores",
+          "What score means in practical terms"
+        ],
+        "purchase_recommendations": [
+          "Strong Buy / Buy / Wait for Sale / Skip categories",
+          "Specific situations where each applies",
+          "Price point recommendations",
+          "Timing considerations (patches, sales, etc.)"
+        ],
+        "audience_specific_guidance": [
+          "Perfect for [specific type of player]",
+          "Avoid if you [specific preferences/conditions]",
+          "Great first VR game? Yes/No and why",
+          "Multiplayer vs single-player considerations"
+        ]
+      },
+      "actionable_conclusions": [
+        "Clear next steps for interested viewers",
+        "Where to buy and what version",
+        "What to expect in first hour of play",
+        "How to optimize settings for best experience"
+      ],
+      "educational_value": "Decision-making framework and consumer guidance"
+    },
+    "9_wrap_up_and_engagement": {
+      "duration": "30-60 seconds",
+      "content_sections": {
+        "key_points_summary": [
+          "Rapid-fire recap of main points",
+          "Reinforce final recommendation",
+          "Highlight most important takeaway"
+        ],
+        "community_engagement": [
+          "Ask viewers about their experiences",
+          "Request feedback on review format",
+          "Encourage questions and discussion",
+          "Preview upcoming reviews"
+        ],
+        "calls_to_action": [
+          "Subscribe for more VR reviews",
+          "Like if review was helpful",
+          "Share with friends considering VR",
+          "Comment with game suggestions"
+        ]
+      },
+      "positive_closure": [
+        "Thank viewers for their time",
+        "Encourage responsible gaming",
+        "Promote positive gaming community",
+        "Express enthusiasm for VR gaming"
+      ],
+      "educational_value": "Community building and continued learning encouragement"
+    }
+  },
+  "essential_coverage_checklist": [
+    "Game name mentioned clearly multiple times",
+    "Price and platform availability stated",
+    "Motion sickness/comfort rating provided",
+    "VR-specific features explained",
+    "Gameplay mechanics demonstrated",
+    "Technical performance assessed",
+    "Target audience identified",
+    "Clear recommendation given",
+    "Comparison to similar games included",
+    "Age-appropriateness discussed"
+  ],
+  "educational_objectives": [
+    "Develop critical analysis skills",
+    "Learn comprehensive evaluation methodology",
+    "Understand VR technology and implementation",
+    "Practice balanced, fair reviewing",
+    "Build gaming literacy and vocabulary",
+    "Foster responsible consumer decision-making",
+    "Encourage thoughtful media consumption",
+    "Promote positive gaming community values"
+  ],
+  "advanced_techniques": {
+    "storytelling_elements": [
+      "Use narrative arc in review structure",
+      "Create emotional connection with content",
+      "Build suspense toward final verdict",
+      "Include personal gaming journey context"
+    ],
+    "visual_storytelling": [
+      "Show, don't just tell gameplay elements",
+      "Use gameplay footage to support points",
+      "Include before/after or comparison shots",
+      "Demonstrate scale and immersion effectively"
+    ],
+    "engagement_psychology": [
+      "Hook viewers with compelling opening",
+      "Maintain interest with varied pacing",
+      "Use cliffhangers before sections",
+      "End with strong, memorable conclusion"
+    ]
+  },
+  "quality_assurance_framework": {
+    "content_accuracy": [
+      "Fact-check all game information",
+      "Verify price and availability",
+      "Double-check technical specifications",
+      "Confirm content rating and themes"
+    ],
+    "educational_effectiveness": [
+      "Clear explanations of technical terms",
+      "Logical flow of information",
+      "Comprehensive coverage of key aspects",
+      "Practical, actionable advice provided"
+    ],
+    "production_quality": [
+      "Clear audio throughout",
+      "Relevant visuals supporting narration",
+      "Smooth transitions between sections",
+      "Professional but approachable presentation"
+    ]
+  },
+  "common_pitfalls_to_avoid": [
+    "Getting too deep into story spoilers",
+    "Spending too much time on minor technical details",
+    "Forgetting to consider different player types",
+    "Being overly negative or positive",
+    "Rushing through important safety information",
+    "Not providing clear, actionable recommendations",
+    "Assuming viewers have extensive VR knowledge",
+    "Failing to maintain educational focus throughout"
+  ],
+  "platform_adaptations": {
+    "youtube_chapters": [
+      "0:00 Introduction & Overview",
+      "1:30 Gameplay Deep Dive", 
+      "4:30 Technical Analysis",
+      "6:30 Comfort & Accessibility",
+      "8:00 Content & Story",
+      "10:00 Comparisons & Context",
+      "11:30 Pros & Cons",
+      "13:30 Final Verdict",
+      "15:00 Wrap-up"
+    ],
+    "tiktok_highlights": [
+      "Best gameplay moment (30s)",
+      "Biggest pro and con (30s)",
+      "Final rating reveal (30s)"
+    ],
+    "instagram_story_breakdown": [
+      "Story 1-2: Introduction and hook",
+      "Story 3-4: Gameplay highlights",
+      "Story 5-6: Technical and comfort info",
+      "Story 7-8: Final verdict and recommendation"
+    ]
+  },
+  "success_measurement": {
+    "viewer_retention_goals": [
+      "80%+ retention through first 2 minutes",
+      "60%+ retention through 10 minutes",
+      "40%+ retention to final verdict"
+    ],
+    "educational_impact_indicators": [
+      "Comments showing understanding of VR concepts",
+      "Viewers making informed purchase decisions",
+      "Questions demonstrating engagement with content",
+      "Appreciation for thorough, balanced analysis"
+    ],
+    "community_building_metrics": [
+      "Constructive discussion in comments",
+      "Viewer sharing of personal experiences",
+      "Requests for specific game reviews",
+      "Positive feedback on review helpfulness"
+    ]
+  }
+}

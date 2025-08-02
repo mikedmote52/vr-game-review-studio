@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 VR Game Review Studio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reviewer-interface.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="reviewer-dashboard">
+        <header class="dashboard-header">
+            <div class="header-content">
+                <h1 class="dashboard-title">
+                    🎮 VR Game Review Studio
+                    <span class="subtitle">Create amazing reviews that help other gamers!</span>
+                </h1>
+                
+                <div class="header-stats">
+                    <div class="stat-card">
+                        <span class="stat-number">{{ stats.total_reviews or 0 }}</span>
+                        <span class="stat-label">Reviews Created</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">{{ stats.average_score or 0 }}/10</span>
+                        <span class="stat-label">Avg Quality</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">{{ stats.average_educational or 0 }}/10</span>
+                        <span class="stat-label">Educational Value</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-main">
+            <!-- Quick Actions Section -->
+            <section class="quick-actions">
+                <h2 class="section-title">🚀 What would you like to do?</h2>
+                
+                <div class="action-grid">
+                    <div class="action-card primary" onclick="location.href='/new-review'">
+                        <div class="card-icon">🎬</div>
+                        <h3>Start New Game Review</h3>
+                        <p>Pick a VR game and create an awesome review that helps other gamers discover great experiences!</p>
+                        <button class="action-button">Start Creating</button>
+                    </div>
+                    
+                    <div class="action-card" onclick="showActiveReviews()">
+                        <div class="card-icon">✏️</div>
+                        <h3>Continue Review</h3>
+                        <p>Finish your in-progress reviews and make them even better!</p>
+                        <button class="action-button">Continue</button>
+                    </div>
+                    
+                    <div class="action-card" onclick="location.href='/review-analytics'">
+                        <div class="card-icon">📊</div>
+                        <h3>Review Performance</h3>
+                        <p>See how your reviews are helping other gamers and track your improvement!</p>
+                        <button class="action-button">View Analytics</button>
+                    </div>
+                    
+                    <div class="action-card" onclick="location.href='/game-database'">
+                        <div class="card-icon">🔍</div>
+                        <h3>Explore VR Games</h3>
+                        <p>Research new VR games to review and discover trending titles!</p>
+                        <button class="action-button">Explore Games</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Reviews Section -->
+            <section class="recent-reviews">
+                <h2 class="section-title">📝 Your Recent Reviews</h2>
+                
+                {% if recent_reviews %}
+                <div class="reviews-grid">
+                    {% for review in recent_reviews %}
+                    <div class="review-card" onclick="openReview('{{ review.id }}')">
+                        <div class="review-header">
+                            <h4 class="review-game">{{ review.game_name }}</h4>
+                            <span class="review-score 
+                                {% if review.overall_score >= 8 %}excellent
+                                {% elif review.overall_score >= 7 %}good
+                                {% elif review.overall_score >= 6 %}okay
+                                {% else %}needs-work{% endif %}">
+                                {{ review.overall_score }}/10
+                            </span>
+                        </div>
+                        
+                        <div class="review-metrics">
+                            <div class="metric">
+                                <span class="metric-label">Educational Value</span>
+                                <div class="metric-bar">
+                                    <div class="metric-fill" style="width: {{ (review.educational_value / 10 * 100) }}%"></div>
+                                </div>
+                                <span class="metric-value">{{ review.educational_value }}/10</span>
+                            </div>
+                        </div>
+                        
+                        <div class="review-footer">
+                            <span class="review-date">{{ format_date(review.timestamp) }}</span>
+                            <button class="review-action" onclick="editReview('{{ review.id }}', event)">Edit</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">🎮</div>
+                    <h3>No reviews yet!</h3>
+                    <p>Create your first VR game review to get started. Your reviews help other gamers discover amazing VR experiences!</p>
+                    <button class="empty-action" onclick="location.href='/new-review'">Create First Review</button>
+                </div>
+                {% endif %}
+            </section>
+
+            <!-- Notifications Section -->
+            {% if notifications %}
+            <section class="notifications">
+                <h2 class="section-title">🔔 Recent Updates</h2>
+                
+                <div class="notifications-list">
+                    {% for notification in notifications %}
+                    <div class="notification-item {{ notification.type }}">
+                        <div class="notification-icon">
+                            {% if notification.type == 'processing_complete' %}🎉
+                            {% elif notification.type == 'quality_check_passed' %}✅
+                            {% elif notification.type == 'quality_issues' %}⚠️
+                            {% else %}📋{% endif %}
+                        </div>
+                        
+                        <div class="notification-content">
+                            <h4 class="notification-title">
+                                {% if notification.type == 'processing_complete' %}
+                                    Review Analysis Complete!
+                                {% elif notification.type == 'quality_check_passed' %}
+                                    Quality Check Passed!
+                                {% elif notification.type == 'quality_issues' %}
+                                    Quality Improvements Suggested
+                                {% else %}
+                                    Update Available
+                                {% endif %}
+                            </h4>
+                            <p class="notification-message">{{ notification.message }}</p>
+                            
+                            {% if notification.game_name %}
+                            <span class="notification-game">{{ notification.game_name }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="notification-time">
+                            {{ format_time_ago(notification.timestamp) }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+
+            <!-- Learning Progress Section -->
+            <section class="learning-progress">
+                <h2 class="section-title">🧠 Your Learning Progress</h2>
+                
+                <div class="progress-grid">
+                    <div class="progress-card">
+                        <h4>Review Quality Trend</h4>
+                        <div class="trend-indicator {{ stats.recent_trend or 'stable' }}">
+                            {% if stats.recent_trend == 'improving' %}📈 Improving
+                            {% elif stats.recent_trend == 'declining' %}📉 Focus Needed
+                            {% else %}📊 Stable{% endif %}
+                        </div>
+                        <p class="progress-description">
+                            {% if stats.recent_trend == 'improving' %}
+                                Great job! Your reviews are getting better!
+                            {% elif stats.recent_trend == 'declining' %}
+                                Let's work on improving your next reviews.
+                            {% else %}
+                                Keep up the consistent quality work!
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    <div class="progress-card">
+                        <h4>Review Skills</h4>
+                        <div class="skill-list">
+                            <div class="skill-item">
+                                <span>Game Analysis</span>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <span>Clear Communication</span>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <span>Educational Value</span>
+                                <div class="skill-bar">
+                                    <div class="skill-fill" style="width: 70%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-card">
+                        <h4>Next Goals</h4>
+                        <ul class="goals-list">
+                            <li>✅ Create your first review</li>
+                            <li>🎯 Achieve 8+ educational value</li>
+                            <li>📈 Improve review structure</li>
+                            <li>🏆 Help 100 gamers discover great VR games</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Game Research Tools -->
+            <section class="research-tools">
+                <h2 class="section-title">🔍 Game Research Tools</h2>
+                
+                <div class="tools-grid">
+                    <div class="tool-card" onclick="location.href='/game-database'">
+                        <div class="tool-icon">🎮</div>
+                        <h4>VR Game Database</h4>
+                        <p>Explore our comprehensive database of VR games with ratings, reviews, and key information.</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="openTrendTracker()">
+                        <div class="tool-icon">📈</div>
+                        <h4>Trending VR Games</h4>
+                        <p>Discover what VR games are trending and popular in the gaming community right now.</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="openReviewGuidelines()">
+                        <div class="tool-icon">📚</div>
+                        <h4>Review Quality Guide</h4>
+                        <p>Learn tips and best practices for creating educational and engaging VR game reviews.</p>
+                    </div>
+                    
+                    <div class="tool-card" onclick="location.href='/parent-dashboard'">
+                        <div class="tool-icon">👨‍👩‍👧‍👦</div>
+                        <h4>Parent Dashboard</h4>
+                        <p>Parents can monitor review activity and ensure safe, educational content creation.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script>
+        // Flash messages handling
+        {% if get_flashed_messages() %}
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+        showNotification('{{ message }}', '{{ category }}');
+        {% endfor %}
+        {% endif %}
+
+        // Dashboard initialization
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDashboard();
+            checkForNotifications();
+        });
+
+        function showActiveReviews() {
+            // Show modal or navigate to active reviews
+            alert('Active reviews feature coming soon! Continue your work from the Recent Reviews section.');
+        }
+
+        function openReview(reviewId) {
+            location.href = `/review-editor?analysis_id=${reviewId}`;
+        }
+
+        function editReview(reviewId, event) {
+            event.stopPropagation();
+            location.href = `/review-editor?analysis_id=${reviewId}&mode=edit`;
+        }
+
+        function openTrendTracker() {
+            // Navigate to trending games section
+            location.href = '/game-database?filter=trending';
+        }
+
+        function openReviewGuidelines() {
+            // Open review guidelines modal or page
+            window.open('/static/docs/review-guidelines.html', '_blank');
+        }
+
+        function initializeDashboard() {
+            // Add any dashboard initialization logic
+            console.log('🎮 VR Game Review Studio Dashboard Loaded');
+        }
+
+        function checkForNotifications() {
+            // Periodically check for new notifications
+            setInterval(async () => {
+                try {
+                    const response = await fetch('/api/notifications');
+                    const data = await response.json();
+                    
+                    if (data.notifications && data.notifications.length > 0) {
+                        updateNotificationDisplay(data.notifications);
+                    }
+                } catch (error) {
+                    console.error('Error checking notifications:', error);
+                }
+            }, 30000); // Check every 30 seconds
+        }
+
+        function updateNotificationDisplay(notifications) {
+            // Update notification display if needed
+            // This could refresh the notifications section
+        }
+
+        function showNotification(message, type) {
+            // Show notification toast
+            const notification = document.createElement('div');
+            notification.className = `notification-toast ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 5000);
+        }
+
+        // Utility functions for template
+        function formatDate(timestamp) {
+            try {
+                const date = new Date(timestamp);
+                return date.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (e) {
+                return 'Recently';
+            }
+        }
+
+        function formatTimeAgo(timestamp) {
+            try {
+                const date = new Date(timestamp);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                
+                if (diffHours < 1) return 'Just now';
+                if (diffHours < 24) return `${diffHours}h ago`;
+                
+                const diffDays = Math.floor(diffHours / 24);
+                return `${diffDays}d ago`;
+            } catch (e) {
+                return 'Recently';
+            }
+        }
+    </script>
+</body>
+</html>

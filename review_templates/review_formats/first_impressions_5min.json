@@ -1,0 +1,238 @@
+{
+  "template_name": "First Impressions - 5 Minute VR Game Review",
+  "template_version": "1.0",
+  "target_audience": "13-year-old VR game reviewer",
+  "educational_focus": "Quick decision-making help for VR game purchases",
+  "estimated_duration": "4-6 minutes",
+  "platform_optimization": {
+    "youtube": {
+      "format": "short_form_educational",
+      "title_format": "First Impressions: {game_name} VR Game Review",
+      "thumbnail_style": "game_action_shot_with_rating",
+      "description_template": "Quick first impressions of {game_name}! Is this VR game worth your time and money? I'll share my honest thoughts after playing for the first time."
+    },
+    "tiktok": {
+      "format": "highlight_reel",
+      "max_duration": "60_seconds",
+      "focus": "most_exciting_moments"
+    },
+    "instagram": {
+      "format": "story_series",
+      "segments": 3,
+      "focus": "visual_highlights"
+    }
+  },
+  "review_structure": {
+    "1_introduction": {
+      "duration": "30-45 seconds",
+      "content_points": [
+        "Enthusiastic greeting and introduction",
+        "Game name and quick overview",
+        "Set expectation: 'First impressions after X hours of play'",
+        "Brief mention of VR platform/headset used"
+      ],
+      "speaking_tips": [
+        "High energy and excitement",
+        "Clear pronunciation of game name",
+        "Make eye contact with camera",
+        "Show game box/icon if available"
+      ],
+      "educational_value": "Introduces game context and reviewer credentials"
+    },
+    "2_what_is_this_game": {
+      "duration": "45-60 seconds",
+      "content_points": [
+        "Game genre and basic concept",
+        "What you actually DO in the game",
+        "Target audience (who would like this?)",
+        "VR-specific features (hand tracking, room scale, etc.)"
+      ],
+      "speaking_tips": [
+        "Use simple, clear language",
+        "Avoid complex technical terms",
+        "Give relatable examples",
+        "Show gameplay footage while explaining"
+      ],
+      "educational_value": "Helps viewers understand if the game matches their interests"
+    },
+    "3_first_impression_highlights": {
+      "duration": "90-120 seconds",
+      "content_points": [
+        "What immediately impressed you",
+        "Coolest VR moment or feature",
+        "How the controls feel",
+        "Graphics and visual quality",
+        "One thing that surprised you (positive or negative)"
+      ],
+      "speaking_tips": [
+        "Use specific examples",
+        "Show the best gameplay moments",
+        "Express genuine reactions",
+        "Explain WHY something impressed you"
+      ],
+      "educational_value": "Gives viewers realistic expectations of game experience"
+    },
+    "4_potential_concerns": {
+      "duration": "45-60 seconds",
+      "content_points": [
+        "Any motion sickness or comfort issues",
+        "Difficulty level concerns",
+        "Technical issues encountered",
+        "Who might NOT enjoy this game"
+      ],
+      "speaking_tips": [
+        "Be honest but fair",
+        "Explain potential issues clearly",
+        "Mention if issues might be fixed with updates",
+        "Consider different player types"
+      ],
+      "educational_value": "Helps viewers make informed decisions and set expectations"
+    },
+    "5_quick_recommendation": {
+      "duration": "45-60 seconds",
+      "content_points": [
+        "Clear recommendation: Buy, Wait, or Skip",
+        "Price consideration (worth the cost?)",
+        "Best fit for what type of VR gamer",
+        "Comparison to similar games if applicable"
+      ],
+      "speaking_tips": [
+        "Be clear and decisive",
+        "Justify your recommendation",
+        "Consider different budgets",
+        "Speak directly to viewer"
+      ],
+      "educational_value": "Provides clear guidance for purchase decisions"
+    },
+    "6_wrap_up": {
+      "duration": "20-30 seconds",
+      "content_points": [
+        "Quick summary of main points",
+        "Encourage viewers to ask questions",
+        "Thank viewers for watching",
+        "Tease next review if planned"
+      ],
+      "speaking_tips": [
+        "Maintain energy to the end",
+        "Encourage engagement",
+        "Clear call-to-action",
+        "Positive, encouraging tone"
+      ],
+      "educational_value": "Reinforces key points and encourages community engagement"
+    }
+  },
+  "vr_specific_topics": {
+    "comfort_and_safety": [
+      "Motion sickness rating (1-10)",
+      "Comfort options available",
+      "Recommended play session length",
+      "Any safety considerations"
+    ],
+    "vr_interactions": [
+      "Hand tracking quality",
+      "Controller responsiveness",
+      "Physical movement requirements",
+      "Gesture recognition accuracy"
+    ],
+    "technical_performance": [
+      "Visual clarity and graphics",
+      "Frame rate stability",
+      "Loading times",
+      "System requirements met"
+    ]
+  },
+  "educational_objectives": [
+    "Help viewers understand what the game offers",
+    "Provide honest first impressions",
+    "Address VR-specific considerations",
+    "Guide purchase decision-making",
+    "Explain VR gaming concepts to beginners"
+  ],
+  "quality_checkpoints": [
+    "Game name mentioned clearly multiple times",
+    "VR platform specified",
+    "Personal experience examples given",
+    "Honest pros and cons discussed",
+    "Clear recommendation provided",
+    "Educational value for other gamers",
+    "Age-appropriate language throughout"
+  ],
+  "common_mistakes_to_avoid": [
+    "Spending too much time on story spoilers",
+    "Getting too technical with VR specs",
+    "Forgetting to mention comfort/motion sickness",
+    "Not showing enough gameplay footage",
+    "Being unclear about recommendation",
+    "Talking too fast due to time pressure"
+  ],
+  "engagement_strategies": {
+    "visual_elements": [
+      "Show exciting gameplay moments",
+      "Use text overlays for key points",
+      "Include reaction shots",
+      "Display game rating/recommendation clearly"
+    ],
+    "audio_techniques": [
+      "Vary speaking pace for emphasis",
+      "Use game audio in background",
+      "Include genuine reaction sounds",
+      "Clear, enthusiastic narration"
+    ],
+    "interactive_elements": [
+      "Ask viewers about their VR experiences",
+      "Encourage questions in comments",
+      "Poll viewers on what to review next",
+      "Share relatable gaming moments"
+    ]
+  },
+  "platform_specific_adaptations": {
+    "youtube_optimization": {
+      "thumbnail_text": "FIRST LOOK",
+      "key_moments_timestamps": true,
+      "detailed_description": true,
+      "relevant_tags": ["VR Gaming", "First Impressions", "Game Review"]
+    },
+    "tiktok_version": {
+      "hook_first_3_seconds": "Best/worst thing about this VR game",
+      "quick_cuts": true,
+      "trending_sounds": "optional_background",
+      "hashtag_strategy": ["#VRGaming", "#GameReview", "#FirstLook"]
+    },
+    "instagram_adaptation": {
+      "story_breakdown": [
+        "Story 1: Game introduction + first reaction",
+        "Story 2: Coolest feature + gameplay",
+        "Story 3: Recommendation + call-to-action"
+      ],
+      "interactive_stickers": ["poll", "questions", "rating"]
+    }
+  },
+  "safety_and_appropriateness": {
+    "content_guidelines": [
+      "No mature content or inappropriate language",
+      "Mention any content warnings for games",
+      "Emphasize responsible gaming habits",
+      "Include parent/guardian guidance if needed"
+    ],
+    "vr_safety_reminders": [
+      "Importance of taking breaks",
+      "Setting up safe play space",
+      "Being aware of surroundings",
+      "Starting with comfort settings"
+    ]
+  },
+  "success_metrics": {
+    "viewer_engagement": [
+      "Comments asking follow-up questions",
+      "Viewers sharing their own experiences",
+      "Requests for full review",
+      "Positive feedback on helpfulness"
+    ],
+    "educational_impact": [
+      "Viewers making informed purchase decisions",
+      "Understanding of VR gaming concepts",
+      "Appreciation for honest reviewing",
+      "Learning about game features"
+    ]
+  }
+}

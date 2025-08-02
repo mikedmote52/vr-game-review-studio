@@ -1,0 +1,166 @@
+{
+  "hooks": {
+    "post-tool-use": [
+      {
+        "command": ["node", ".claude/hooks/post-upload.js"],
+        "description": "Process uploaded VR game review with context-isolated multi-agent analysis"
+      }
+    ],
+    "notification": [
+      {
+        "command": ["node", ".claude/hooks/review-quality-check.js"],
+        "description": "Assess review educational value and quality before publishing"
+      },
+      {
+        "command": ["python3", "automation_workflows/review_quality_enhancer.py"],
+        "description": "Enhance educational value and optimize for gaming audience"
+      },
+      {
+        "command": ["afplay", "sounds/review-ready.wav"],
+        "description": "Audio notification when review analysis is complete"
+      }
+    ],
+    "pre-compact": [
+      {
+        "command": ["python3", "context_management/gaming_pattern_extraction.py"],
+        "description": "Extract successful review patterns before context compression"
+      }
+    ]
+  },
+  "context_management": {
+    "max_context_windows": 4,
+    "context_isolation_enabled": true,
+    "aggressive_cleanup": true,
+    "learning_memory_compression": 0.1,
+    "context_pollution_prevention": true,
+    "agent_context_limits": {
+      "game_analysis": 200000,
+      "review_quality": 150000,
+      "audience_growth": 100000,
+      "safety_monitoring": 50000
+    }
+  },
+  "agent_orchestration": {
+    "total_budget_per_review": 0.20,
+    "agent_budgets": {
+      "game_analyst": 0.07,
+      "review_quality": 0.07,
+      "audience_growth": 0.06
+    },
+    "agent_timeout": 120,
+    "parallel_execution": true,
+    "competition_mode": true,
+    "consensus_building": true
+  },
+  "review_quality_standards": {
+    "educational_value_minimum": 6,
+    "clarity_rating_minimum": 6,
+    "completeness_score_minimum": 6,
+    "age_appropriate": true,
+    "safety_verified": true,
+    "parent_oversight_required": true
+  },
+  "gaming_content_guidelines": {
+    "target_audience": "13-year-old VR game reviewer",
+    "content_focus": "educational_gaming_content",
+    "safety_priority": "high",
+    "community_engagement": "positive_only",
+    "platform_optimization": {
+      "youtube": {
+        "format": "long_form_educational",
+        "target_length": "8-15_minutes",
+        "focus": "detailed_analysis"
+      },
+      "tiktok": {
+        "format": "quick_highlights",
+        "target_length": "60_seconds",
+        "focus": "key_features"
+      },
+      "instagram": {
+        "format": "visual_stories",
+        "target_length": "30_seconds",
+        "focus": "visual_appeal"
+      },
+      "reddit": {
+        "format": "discussion_starter",
+        "focus": "community_engagement"
+      }
+    }
+  },
+  "vr_game_database": {
+    "compression_enabled": true,
+    "max_games_cache": 500,
+    "priority_scoring": true,
+    "trending_game_boost": true,
+    "educational_content_priority": true,
+    "age_appropriate_filtering": true
+  },
+  "safety_systems": {
+    "content_safety_check": true,
+    "language_appropriateness": true,
+    "gaming_community_safety": true,
+    "parent_approval_required": true,
+    "digital_citizenship_coaching": true,
+    "inappropriate_content_blocking": true
+  },
+  "automation_workflows": {
+    "auto_game_research": true,
+    "review_structure_optimization": true,
+    "educational_content_enhancement": true,
+    "multi_platform_publishing": true,
+    "community_engagement_automation": false,
+    "parent_notification_system": true
+  },
+  "learning_memory": {
+    "successful_pattern_tracking": true,
+    "audience_preference_learning": true,
+    "review_quality_evolution": true,
+    "gaming_trend_adaptation": true,
+    "compressed_storage_only": true,
+    "max_memory_entries": 50
+  },
+  "development_settings": {
+    "git_worktrees_enabled": true,
+    "review_format_experimentation": true,
+    "a_b_testing_formats": true,
+    "template_evolution": true,
+    "safe_experimentation": true
+  },
+  "notification_sounds": {
+    "review_ready": "sounds/review-ready.wav",
+    "quality_passed": "sounds/quality-passed.wav", 
+    "quality_issues": "sounds/quality-issues.wav",
+    "processing_complete": "sounds/processing-complete.wav",
+    "error_notification": "sounds/error.wav"
+  },
+  "file_processing": {
+    "max_upload_size": "500MB",
+    "supported_video_formats": [".mp4", ".mov", ".avi", ".mkv"],
+    "processing_timeout": 300000,
+    "auto_cleanup": true,
+    "backup_enabled": true
+  },
+  "web_interface": {
+    "port": 5000,
+    "host": "localhost",
+    "young_reviewer_optimized": true,
+    "parent_dashboard_enabled": true,
+    "game_research_tools": true,
+    "guided_review_creation": true,
+    "multi_platform_preview": true
+  },
+  "cost_monitoring": {
+    "daily_budget_limit": 5.00,
+    "monthly_budget_limit": 100.00,
+    "cost_alerts": true,
+    "budget_optimization": true,
+    "agent_cost_tracking": true
+  },
+  "performance_monitoring": {
+    "processing_time_tracking": true,
+    "context_efficiency_monitoring": true,
+    "agent_performance_metrics": true,
+    "quality_improvement_tracking": true,
+    "user_satisfaction_metrics": true
+  }
+}
