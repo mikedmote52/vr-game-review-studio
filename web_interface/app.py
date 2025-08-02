@@ -12,22 +12,39 @@ from werkzeug.utils import secure_filename
 import sys
 
 # Add project root to path
-sys.path.append('/Users/michaelmote/Desktop/vr-game-review-studio')
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_root)
 
-from context_management.review_context_engine import ReviewContextEngine
-from agent_orchestration.context_coordinator import ReviewAgentCoordinator
-from context_management.game_knowledge_compression import VRGameKnowledgeCompressor
-from vr_game_intelligence.review_quality_assessor import ReviewQualityAssessor
+# Import modules with graceful fallback for deployment
+try:
+    from context_management.review_context_engine import ReviewContextEngine
+    from agent_orchestration.context_coordinator import ReviewAgentCoordinator
+    from context_management.game_knowledge_compression import VRGameKnowledgeCompressor
+    from vr_game_intelligence.review_quality_assessor import ReviewQualityAssessor
+    AI_MODULES_AVAILABLE = True
+except ImportError as e:
+    print(f"AI modules not available: {e}")
+    AI_MODULES_AVAILABLE = False
+    # Create mock classes for demo
+    class MockEngine:
+        def __init__(self): pass
+        async def analyze_vr_game_review_with_isolation(self, *args): 
+            return {"status": "demo_mode", "message": "AI analysis available in full deployment"}
+    
+    ReviewContextEngine = MockEngine
+    ReviewAgentCoordinator = MockEngine
+    VRGameKnowledgeCompressor = MockEngine
+    ReviewQualityAssessor = MockEngine
 
 app = Flask(__name__)
-app.secret_key = 'vr_review_studio_secret_key_for_young_reviewer'
+app.secret_key = os.getenv('FLASK_SECRET_KEY', 'vr_review_studio_secret_key_for_young_reviewer')
 
 # Configuration
 CONFIG = {
-    'UPLOAD_FOLDER': '/Users/michaelmote/Desktop/vr-game-review-studio/uploads',
+    'UPLOAD_FOLDER': os.path.join(project_root, 'uploads'),
     'MAX_CONTENT_LENGTH': 500 * 1024 * 1024,  # 500MB max file size
     'ALLOWED_EXTENSIONS': {'mp4', 'mov', 'avi', 'mkv'},
-    'PROJECT_ROOT': '/Users/michaelmote/Desktop/vr-game-review-studio'
+    'PROJECT_ROOT': project_root
 }
 
 app.config.update(CONFIG)
@@ -35,11 +52,19 @@ app.config.update(CONFIG)
 # Ensure upload directory exists
 os.makedirs(CONFIG['UPLOAD_FOLDER'], exist_ok=True)
 
-# Initialize systems
-context_engine = ReviewContextEngine()
-agent_coordinator = ReviewAgentCoordinator()
-game_compressor = VRGameKnowledgeCompressor()
-quality_assessor = ReviewQualityAssessor()
+# Initialize systems with fallback
+try:
+    context_engine = ReviewContextEngine()
+    agent_coordinator = ReviewAgentCoordinator()
+    game_compressor = VRGameKnowledgeCompressor()
+    quality_assessor = ReviewQualityAssessor()
+    print("🤖 AI analysis systems initialized")
+except Exception as e:
+    print(f"AI systems in demo mode: {e}")
+    context_engine = ReviewContextEngine()
+    agent_coordinator = ReviewAgentCoordinator()
+    game_compressor = VRGameKnowledgeCompressor()
+    quality_assessor = ReviewQualityAssessor()
 
 def allowed_file(filename):
     """Check if uploaded file is allowed"""
