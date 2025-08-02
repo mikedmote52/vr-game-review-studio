@@ -21,8 +21,16 @@ print(f"Current working directory: {os.getcwd()}")
 print(f"Environment variables: FLASK_DEBUG={os.getenv('FLASK_DEBUG')}, RENDER={os.getenv('RENDER')}")
 
 # Check if we're in production environment first
-IS_PRODUCTION = os.getenv('FLASK_DEBUG', 'True').lower() == 'false' or os.getenv('RENDER', False)
+# Render sets several environment variables we can check
+IS_PRODUCTION = (
+    os.getenv('RENDER') is not None or 
+    os.getenv('RENDER_SERVICE_NAME') is not None or
+    os.getenv('PORT') is not None or
+    os.getenv('FLASK_DEBUG', 'True').lower() == 'false'
+)
 print(f"IS_PRODUCTION: {IS_PRODUCTION}")
+print(f"RENDER env: {os.getenv('RENDER')}")
+print(f"PORT env: {os.getenv('PORT')}")
 
 # For production deployment, disable complex AI modules
 AI_MODULES_AVAILABLE = False
@@ -746,11 +754,17 @@ print("🤖 AI analysis systems initialized")
 print("🛡️ Safety systems active")
 
 # Use environment variables for deployment
-host = os.getenv('FLASK_HOST', '0.0.0.0')  # Changed to 0.0.0.0 for Render
-port = int(os.getenv('FLASK_PORT', 10000))  # Render uses port 10000 by default
-debug = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'
+# Render provides PORT environment variable
+if IS_PRODUCTION:
+    host = '0.0.0.0'
+    port = int(os.environ.get('PORT', 10000))
+    debug = False
+else:
+    host = os.getenv('FLASK_HOST', 'localhost')
+    port = int(os.getenv('FLASK_PORT', 5000))
+    debug = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'
 
-print(f"Configured to run on {host}:{port} (debug={debug})")
+print(f"Configured to run on {host}:{port} (debug={debug}, production={IS_PRODUCTION})")
 
 if __name__ == '__main__':
     app.run(host=host, port=port, debug=debug)
