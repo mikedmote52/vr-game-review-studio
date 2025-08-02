@@ -7,7 +7,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, s
 import os
 import json
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 import sys
 
@@ -39,6 +39,9 @@ except ImportError as e:
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'vr_review_studio_secret_key_for_young_reviewer')
 
+# Check if we're in production environment (Render)
+IS_PRODUCTION = os.getenv('FLASK_DEBUG', 'True').lower() == 'false' or os.getenv('RENDER', False)
+
 # Configuration
 CONFIG = {
     'UPLOAD_FOLDER': os.path.join(project_root, 'uploads'),
@@ -50,7 +53,17 @@ CONFIG = {
 app.config.update(CONFIG)
 
 # Ensure upload directory exists
-os.makedirs(CONFIG['UPLOAD_FOLDER'], exist_ok=True)
+if IS_PRODUCTION:
+    # In production, use /tmp for uploads
+    CONFIG['UPLOAD_FOLDER'] = '/tmp/uploads'
+    print("Production mode: Using /tmp for uploads")
+
+try:
+    os.makedirs(CONFIG['UPLOAD_FOLDER'], exist_ok=True)
+except (PermissionError, OSError) as e:
+    print(f"Cannot create upload directory: {CONFIG['UPLOAD_FOLDER']} - {e}")
+    if not IS_PRODUCTION:
+        raise
 
 # Initialize systems with fallback
 try:
@@ -378,6 +391,9 @@ def get_recent_reviews():
     """Get recent review data"""
     try:
         results_dir = os.path.join(CONFIG['PROJECT_ROOT'], 'learning_memory', 'analysis_results')
+        # Fallback to /tmp in production
+        if not os.path.exists(results_dir):
+            results_dir = '/tmp/analysis_results'
         if not os.path.exists(results_dir):
             return []
         
@@ -410,6 +426,9 @@ def get_notifications():
     
     try:
         notification_dir = os.path.join(CONFIG['PROJECT_ROOT'], 'web_interface', 'notifications')
+        # Fallback to /tmp in production
+        if not os.path.exists(notification_dir):
+            notification_dir = '/tmp/notifications'
         
         if os.path.exists(notification_dir):
             for filename in os.listdir(notification_dir):
@@ -427,6 +446,9 @@ def get_review_statistics():
     """Get review statistics for dashboard"""
     try:
         memory_file = os.path.join(CONFIG['PROJECT_ROOT'], 'learning_memory', 'review_quality_evolution.json')
+        # Fallback to /tmp in production
+        if not os.path.exists(memory_file):
+            memory_file = '/tmp/review_quality_evolution.json'
         
         if os.path.exists(memory_file):
             with open(memory_file, 'r') as f:
@@ -491,7 +513,12 @@ def store_analysis_results(analysis_result):
     """Store analysis results for future reference"""
     try:
         results_dir = os.path.join(CONFIG['PROJECT_ROOT'], 'learning_memory', 'analysis_results')
-        os.makedirs(results_dir, exist_ok=True)
+        try:
+            os.makedirs(results_dir, exist_ok=True)
+        except (PermissionError, OSError):
+            # Use /tmp in production environments
+            results_dir = '/tmp/analysis_results'
+            os.makedirs(results_dir, exist_ok=True)
         
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         game_name = analysis_result['game_info'].get('name', 'Unknown').replace(' ', '_')
@@ -512,6 +539,9 @@ def load_analysis_results(analysis_id):
     """Load analysis results by ID"""
     try:
         results_dir = os.path.join(CONFIG['PROJECT_ROOT'], 'learning_memory', 'analysis_results')
+        # Fallback to /tmp in production
+        if not os.path.exists(results_dir):
+            results_dir = '/tmp/analysis_results'
         filepath = os.path.join(results_dir, f"{analysis_id}.json")
         
         if os.path.exists(filepath):
@@ -530,6 +560,9 @@ def get_review_analytics():
     """Get review performance analytics"""
     try:
         memory_file = os.path.join(CONFIG['PROJECT_ROOT'], 'learning_memory', 'review_quality_evolution.json')
+        # Fallback to /tmp in production
+        if not os.path.exists(memory_file):
+            memory_file = '/tmp/review_quality_evolution.json'
         
         if os.path.exists(memory_file):
             with open(memory_file, 'r') as f:
@@ -553,6 +586,9 @@ def get_learning_insights():
     """Get learning insights from review history"""
     try:
         patterns_file = os.path.join(CONFIG['PROJECT_ROOT'], 'learning_memory', 'successful_review_patterns.json')
+        # Fallback to /tmp in production
+        if not os.path.exists(patterns_file):
+            patterns_file = '/tmp/successful_review_patterns.json'
         
         if os.path.exists(patterns_file):
             with open(patterns_file, 'r') as f:
