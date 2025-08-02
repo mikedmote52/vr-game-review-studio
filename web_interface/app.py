@@ -12,7 +12,17 @@ from werkzeug.utils import secure_filename
 import sys
 
 # Add project root to path
-project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Check if we're in production environment first
+IS_PRODUCTION = os.getenv('FLASK_DEBUG', 'True').lower() == 'false' or os.getenv('RENDER', False)
+
+if IS_PRODUCTION:
+    # In production, use current working directory
+    project_root = os.getcwd()
+    print(f"Production mode: Using cwd as project root: {project_root}")
+else:
+    # In development, use relative path from web_interface
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    
 sys.path.append(project_root)
 
 # Import modules with graceful fallback for deployment
@@ -39,27 +49,28 @@ except ImportError as e:
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'vr_review_studio_secret_key_for_young_reviewer')
 
-# Check if we're in production environment (Render)
-IS_PRODUCTION = os.getenv('FLASK_DEBUG', 'True').lower() == 'false' or os.getenv('RENDER', False)
-
 # Configuration
-CONFIG = {
-    'UPLOAD_FOLDER': os.path.join(project_root, 'uploads'),
-    'MAX_CONTENT_LENGTH': 500 * 1024 * 1024,  # 500MB max file size
-    'ALLOWED_EXTENSIONS': {'mp4', 'mov', 'avi', 'mkv'},
-    'PROJECT_ROOT': project_root
-}
+if IS_PRODUCTION:
+    CONFIG = {
+        'UPLOAD_FOLDER': '/tmp/uploads',
+        'MAX_CONTENT_LENGTH': 500 * 1024 * 1024,  # 500MB max file size
+        'ALLOWED_EXTENSIONS': {'mp4', 'mov', 'avi', 'mkv'},
+        'PROJECT_ROOT': project_root
+    }
+else:
+    CONFIG = {
+        'UPLOAD_FOLDER': os.path.join(project_root, 'uploads'),
+        'MAX_CONTENT_LENGTH': 500 * 1024 * 1024,  # 500MB max file size
+        'ALLOWED_EXTENSIONS': {'mp4', 'mov', 'avi', 'mkv'},
+        'PROJECT_ROOT': project_root
+    }
 
 app.config.update(CONFIG)
 
 # Ensure upload directory exists
-if IS_PRODUCTION:
-    # In production, use /tmp for uploads
-    CONFIG['UPLOAD_FOLDER'] = '/tmp/uploads'
-    print("Production mode: Using /tmp for uploads")
-
 try:
     os.makedirs(CONFIG['UPLOAD_FOLDER'], exist_ok=True)
+    print(f"Upload directory ready: {CONFIG['UPLOAD_FOLDER']}")
 except (PermissionError, OSError) as e:
     print(f"Cannot create upload directory: {CONFIG['UPLOAD_FOLDER']} - {e}")
     if not IS_PRODUCTION:
@@ -387,13 +398,26 @@ def parent_dashboard():
                              progress={})
 
 # Helper functions
+def get_data_path(relative_path):
+    """Get appropriate file path for production or development"""
+    if IS_PRODUCTION:
+        # In production, use /tmp for all data with simplified structure
+        if 'analysis_results' in relative_path:
+            return '/tmp/analysis_results'
+        elif 'notifications' in relative_path:
+            return '/tmp/notifications'
+        elif relative_path.endswith('.json'):
+            filename = os.path.basename(relative_path)
+            return f'/tmp/{filename}'
+        else:
+            return f'/tmp/{relative_path.replace("/", "_")}'
+    else:
+        # In development, use project structure
+        return os.path.join(CONFIG['PROJECT_ROOT'], relative_path)
 def get_recent_reviews():
     """Get recent review data"""
     try:
-        results_dir = os.path.join(CONFIG['PROJECT_ROOT'], 'learning_memory', 'analysis_results')
-        # Fallback to /tmp in production
-        if not os.path.exists(results_dir):
-            results_dir = '/tmp/analysis_results'
+        results_dir = get_data_path('learning_memory/analysis_results')
         if not os.path.exists(results_dir):
             return []
         
@@ -425,10 +449,7 @@ def get_notifications():
     notifications = []
     
     try:
-        notification_dir = os.path.join(CONFIG['PROJECT_ROOT'], 'web_interface', 'notifications')
-        # Fallback to /tmp in production
-        if not os.path.exists(notification_dir):
-            notification_dir = '/tmp/notifications'
+        notification_dir = get_data_path('web_interface/notifications')
         
         if os.path.exists(notification_dir):
             for filename in os.listdir(notification_dir):
@@ -445,10 +466,7 @@ def get_notifications():
 def get_review_statistics():
     """Get review statistics for dashboard"""
     try:
-        memory_file = os.path.join(CONFIG['PROJECT_ROOT'], 'learning_memory', 'review_quality_evolution.json')
-        # Fallback to /tmp in production
-        if not os.path.exists(memory_file):
-            memory_file = '/tmp/review_quality_evolution.json'
+        memory_file = get_data_path('learning_memory/review_quality_evolution.json')
         
         if os.path.exists(memory_file):
             with open(memory_file, 'r') as f:
@@ -512,13 +530,12 @@ def create_mock_game_info(game_name):
 def store_analysis_results(analysis_result):
     """Store analysis results for future reference"""
     try:
-        results_dir = os.path.join(CONFIG['PROJECT_ROOT'], 'learning_memory', 'analysis_results')
+        results_dir = get_data_path('learning_memory/analysis_results')
         try:
             os.makedirs(results_dir, exist_ok=True)
         except (PermissionError, OSError):
-            # Use /tmp in production environments
-            results_dir = '/tmp/analysis_results'
-            os.makedirs(results_dir, exist_ok=True)
+            print(f"Cannot create results directory: {results_dir}")
+            return None
         
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         game_name = analysis_result['game_info'].get('name', 'Unknown').replace(' ', '_')
@@ -538,10 +555,7 @@ def store_analysis_results(analysis_result):
 def load_analysis_results(analysis_id):
     """Load analysis results by ID"""
     try:
-        results_dir = os.path.join(CONFIG['PROJECT_ROOT'], 'learning_memory', 'analysis_results')
-        # Fallback to /tmp in production
-        if not os.path.exists(results_dir):
-            results_dir = '/tmp/analysis_results'
+        results_dir = get_data_path('learning_memory/analysis_results')
         filepath = os.path.join(results_dir, f"{analysis_id}.json")
         
         if os.path.exists(filepath):
@@ -559,10 +573,7 @@ def load_review_data(review_id):
 def get_review_analytics():
     """Get review performance analytics"""
     try:
-        memory_file = os.path.join(CONFIG['PROJECT_ROOT'], 'learning_memory', 'review_quality_evolution.json')
-        # Fallback to /tmp in production
-        if not os.path.exists(memory_file):
-            memory_file = '/tmp/review_quality_evolution.json'
+        memory_file = get_data_path('learning_memory/review_quality_evolution.json')
         
         if os.path.exists(memory_file):
             with open(memory_file, 'r') as f:
@@ -585,10 +596,7 @@ def get_review_analytics():
 def get_learning_insights():
     """Get learning insights from review history"""
     try:
-        patterns_file = os.path.join(CONFIG['PROJECT_ROOT'], 'learning_memory', 'successful_review_patterns.json')
-        # Fallback to /tmp in production
-        if not os.path.exists(patterns_file):
-            patterns_file = '/tmp/successful_review_patterns.json'
+        patterns_file = get_data_path('learning_memory/successful_review_patterns.json')
         
         if os.path.exists(patterns_file):
             with open(patterns_file, 'r') as f:
