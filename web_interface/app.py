@@ -3,67 +3,69 @@ VR Game Review Studio Web Interface
 Young reviewer-friendly Flask application with game research tools
 """
 
+print("Starting VR Game Review Studio Web Interface...")
+
 from flask import Flask, render_template, request, jsonify, redirect, url_for, session, flash
 import os
 import json
-import asyncio
 from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
-import sys
 
-# Add project root to path
+try:
+    import asyncio
+except ImportError:
+    print("Warning: asyncio not available")
+    asyncio = None
+
+print(f"Current working directory: {os.getcwd()}")
+print(f"Environment variables: FLASK_DEBUG={os.getenv('FLASK_DEBUG')}, RENDER={os.getenv('RENDER')}")
+
 # Check if we're in production environment first
 IS_PRODUCTION = os.getenv('FLASK_DEBUG', 'True').lower() == 'false' or os.getenv('RENDER', False)
+print(f"IS_PRODUCTION: {IS_PRODUCTION}")
 
-if IS_PRODUCTION:
-    # In production, use current working directory
-    project_root = os.getcwd()
-    print(f"Production mode: Using cwd as project root: {project_root}")
-else:
-    # In development, use relative path from web_interface
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    
-sys.path.append(project_root)
+# For production deployment, disable complex AI modules
+AI_MODULES_AVAILABLE = False
 
-# Import modules with graceful fallback for deployment
-try:
-    from context_management.review_context_engine import ReviewContextEngine
-    from agent_orchestration.context_coordinator import ReviewAgentCoordinator
-    from context_management.game_knowledge_compression import VRGameKnowledgeCompressor
-    from vr_game_intelligence.review_quality_assessor import ReviewQualityAssessor
-    AI_MODULES_AVAILABLE = True
-except ImportError as e:
-    print(f"AI modules not available: {e}")
-    AI_MODULES_AVAILABLE = False
-    # Create mock classes for demo
-    class MockEngine:
-        def __init__(self): pass
-        async def analyze_vr_game_review_with_isolation(self, *args): 
-            return {"status": "demo_mode", "message": "AI analysis available in full deployment"}
-    
-    ReviewContextEngine = MockEngine
-    ReviewAgentCoordinator = MockEngine
-    VRGameKnowledgeCompressor = MockEngine
-    ReviewQualityAssessor = MockEngine
+# Create mock classes for demo
+class MockEngine:
+    def __init__(self): pass
+    async def analyze_vr_game_review_with_isolation(self, *args): 
+        return {"status": "demo_mode", "message": "AI analysis available in full deployment"}
+    def search_games_by_criteria(self, **kwargs):
+        return []
+    def get_compressed_game_info(self, game_name):
+        return None
+    def get_database_stats(self):
+        return {'total_games': 0, 'total_reviews': 0}
+    async def competitive_review_analysis(self, *args):
+        return {"status": "demo_mode"}
+    async def comprehensive_quality_analysis(self, *args):
+        return {"status": "demo_mode"}
+
+ReviewContextEngine = MockEngine
+ReviewAgentCoordinator = MockEngine
+VRGameKnowledgeCompressor = MockEngine  
+ReviewQualityAssessor = MockEngine
 
 app = Flask(__name__)
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'vr_review_studio_secret_key_for_young_reviewer')
 
 # Configuration
 if IS_PRODUCTION:
-    CONFIG = {
-        'UPLOAD_FOLDER': '/tmp/uploads',
-        'MAX_CONTENT_LENGTH': 500 * 1024 * 1024,  # 500MB max file size
-        'ALLOWED_EXTENSIONS': {'mp4', 'mov', 'avi', 'mkv'},
-        'PROJECT_ROOT': project_root
-    }
+    project_root = '/app'  # Render default app directory
 else:
-    CONFIG = {
-        'UPLOAD_FOLDER': os.path.join(project_root, 'uploads'),
-        'MAX_CONTENT_LENGTH': 500 * 1024 * 1024,  # 500MB max file size
-        'ALLOWED_EXTENSIONS': {'mp4', 'mov', 'avi', 'mkv'},
-        'PROJECT_ROOT': project_root
-    }
+    try:
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    except:
+        project_root = os.getcwd()
+
+CONFIG = {
+    'UPLOAD_FOLDER': '/tmp/uploads' if IS_PRODUCTION else os.path.join(project_root, 'uploads'),
+    'MAX_CONTENT_LENGTH': 500 * 1024 * 1024,  # 500MB max file size
+    'ALLOWED_EXTENSIONS': {'mp4', 'mov', 'avi', 'mkv'},
+    'PROJECT_ROOT': project_root
+}
 
 app.config.update(CONFIG)
 
@@ -243,44 +245,21 @@ def process_review_api():
         if not filepath or not os.path.exists(filepath):
             return jsonify({'error': 'Invalid file path', 'status': 'error'})
         
-        # Run async processing
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
+        # Mock processing for production demo
+        combined_result = {
+            'status': 'complete',
+            'context_analysis': {'status': 'demo_mode', 'message': 'AI analysis in demo mode'},
+            'agent_consensus': {'status': 'demo_mode'},
+            'quality_assessment': {'status': 'demo_mode'},
+            'processing_timestamp': datetime.now().isoformat(),
+            'game_info': game_info,
+            'filepath': filepath
+        }
         
-        try:
-            # Context-isolated analysis
-            context_result = loop.run_until_complete(
-                context_engine.analyze_vr_game_review_with_isolation(filepath, game_info)
-            )
-            
-            # Agent competition analysis
-            agent_result = loop.run_until_complete(
-                agent_coordinator.competitive_review_analysis(filepath, game_info)
-            )
-            
-            # Quality assessment
-            quality_result = loop.run_until_complete(
-                quality_assessor.comprehensive_quality_analysis(filepath, game_info, agent_result)
-            )
-            
-            # Combine results
-            combined_result = {
-                'status': 'complete',
-                'context_analysis': context_result,
-                'agent_consensus': agent_result.__dict__ if hasattr(agent_result, '__dict__') else str(agent_result),
-                'quality_assessment': quality_result,
-                'processing_timestamp': datetime.now().isoformat(),
-                'game_info': game_info,
-                'filepath': filepath
-            }
-            
-            # Store results
-            store_analysis_results(combined_result)
-            
-            return jsonify(combined_result)
-            
-        finally:
-            loop.close()
+        # Store results
+        store_analysis_results(combined_result)
+        
+        return jsonify(combined_result)
             
     except Exception as e:
         return jsonify({'error': str(e), 'status': 'error'})
