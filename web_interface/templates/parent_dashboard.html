@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parent Dashboard - VR Game Review Studio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reviewer-interface.css') }}">
+</head>
+<body>
+    <div class="reviewer-dashboard">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">👨‍👩‍👧‍👦 Parent Dashboard</h1>
+            <span class="subtitle">Monitor your young reviewer's progress</span>
+            <a href="/" class="back-button" style="float: right;">← Back to Dashboard</a>
+        </div>
+        
+        <div class="dashboard-main">
+            <div class="section-title">Activity Overview</div>
+            <div class="action-grid">
+                <div class="action-card">
+                    <div class="card-icon">📊</div>
+                    <h3>Reviews This Week</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #667eea;">{{ activity.total_this_week or 0 }}</p>
+                </div>
+                <div class="action-card">
+                    <div class="card-icon">🛡️</div>
+                    <h3>Safety Score</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #10b981;">{{ activity.safety_score or 0 }}/10</p>
+                </div>
+                <div class="action-card">
+                    <div class="card-icon">📚</div>
+                    <h3>Educational Progress</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #764ba2;">{{ activity.educational_progress or 0 }}/10</p>
+                </div>
+            </div>
+            
+            <div class="section-title" style="margin-top: 40px;">Safety Report</div>
+            <div class="sidebar-card">
+                <p><strong>Content Appropriate:</strong> {% if safety.content_appropriate %}✅ Yes{% else %}⚠️ Review Needed{% endif %}</p>
+                <p><strong>Language Suitable:</strong> {% if safety.language_suitable %}✅ Yes{% else %}⚠️ Review Needed{% endif %}</p>
+                <p><strong>Community Interactions:</strong> {{ safety.community_interactions|capitalize }}</p>
+                <div style="margin-top: 20px;">
+                    <strong>Recommendations:</strong>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        {% for recommendation in safety.recommendations %}
+                        <li>{{ recommendation }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="section-title" style="margin-top: 40px;">Progress Tracking</div>
+            <div class="progress-grid">
+                <div class="progress-card">
+                    <h4>Areas of Strength</h4>
+                    <ul>
+                        {% for strength in progress.areas_of_strength %}
+                        <li>✨ {{ strength }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="progress-card">
+                    <h4>Areas for Improvement</h4>
+                    <ul>
+                        {% for improvement in progress.areas_for_improvement %}
+                        <li>📈 {{ improvement }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

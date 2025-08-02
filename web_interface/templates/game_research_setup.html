@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New VR Game Review - Research Setup</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reviewer-interface.css') }}">
+    <style>
+        .game-search-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .search-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .search-results {
+            margin-top: 20px;
+        }
+        
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .game-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .game-details h3 {
+            margin: 0 0 5px 0;
+            color: #2d3748;
+        }
+        
+        .game-meta {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        .game-rating {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .review-type-selector {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .review-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .review-type-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .review-type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .review-type-card h4 {
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
+        }
+        
+        .review-type-card p {
+            margin: 0;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #6b7280;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-search-container">
+        <a href="/" class="back-button">← Back to Dashboard</a>
+        
+        <div class="search-box">
+            <h1 style="text-align: center; color: #2d3748; margin-bottom: 30px;">
+                🎮 Choose a VR Game to Review
+            </h1>
+            <input 
+                type="text" 
+                class="search-input" 
+                id="gameSearch" 
+                placeholder="Search for a VR game..."
+                autofocus
+            >
+            <div class="search-results" id="searchResults"></div>
+        </div>
+        
+        <div class="review-type-selector" id="reviewTypeSelector">
+            <h2 style="text-align: center; color: #2d3748; margin-bottom: 20px;">
+                Choose Your Review Type
+            </h2>
+            <p style="text-align: center; color: #6b7280; margin-bottom: 30px;">
+                Selected Game: <strong id="selectedGameName"></strong>
+            </p>
+            <div class="review-types">
+                <div class="review-type-card" onclick="selectReviewType('full-review')">
+                    <h4>🌟 Full Review</h4>
+                    <p>Complete analysis with all features</p>
+                </div>
+                <div class="review-type-card" onclick="selectReviewType('first-impressions')">
+                    <h4>👀 First Impressions</h4>
+                    <p>Quick 5-minute thoughts</p>
+                </div>
+                <div class="review-type-card" onclick="selectReviewType('gameplay-highlights')">
+                    <h4>🎯 Gameplay Highlights</h4>
+                    <p>Best moments compilation</p>
+                </div>
+                <div class="review-type-card" onclick="selectReviewType('vr-comfort')">
+                    <h4>🤢 VR Comfort Review</h4>
+                    <p>Motion sickness analysis</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedGame = null;
+        let searchTimeout = null;
+        
+        document.getElementById('gameSearch').addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            
+            if (query.length < 2) {
+                document.getElementById('searchResults').innerHTML = '';
+                return;
+            }
+            
+            searchTimeout = setTimeout(() => {
+                searchGames(query);
+            }, 300);
+        });
+        
+        async function searchGames(query) {
+            try {
+                const response = await fetch(`/api/search-games?q=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                displaySearchResults(data.games || []);
+            } catch (error) {
+                console.error('Search error:', error);
+                document.getElementById('searchResults').innerHTML = '<p style="color: #ef4444;">Error searching games</p>';
+            }
+        }
+        
+        function displaySearchResults(games) {
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (games.length === 0) {
+                resultsDiv.innerHTML = '<p style="text-align: center; color: #6b7280; margin-top: 20px;">No games found. Try a different search term.</p>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = games.map(game => `
+                <div class="game-card" onclick='selectGame(${JSON.stringify(game)})'>
+                    <div class="game-info">
+                        <div class="game-details">
+                            <h3>${game.name}</h3>
+                            <div class="game-meta">
+                                ${game.genre} • ${game.platform} • $${game.price}
+                            </div>
+                        </div>
+                        <div class="game-rating">
+                            ⭐ ${game.rating}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function selectGame(game) {
+            selectedGame = game;
+            document.getElementById('selectedGameName').textContent = game.name;
+            document.querySelector('.search-box').style.display = 'none';
+            document.getElementById('reviewTypeSelector').style.display = 'block';
+        }
+        
+        function selectReviewType(type) {
+            if (!selectedGame) return;
+            
+            // Redirect to upload page with game and type parameters
+            const params = new URLSearchParams({
+                game: selectedGame.name,
+                type: type
+            });
+            window.location.href = `/upload-review?${params.toString()}`;
+        }
+        
+        // Add some example games on load
+        setTimeout(() => {
+            if (document.getElementById('gameSearch').value === '') {
+                displaySearchResults([
+                    {name: 'Half-Life: Alyx', genre: 'Action/Adventure', platform: 'PC VR', price: 59.99, rating: 4.8},
+                    {name: 'Beat Saber', genre: 'Rhythm', platform: 'Multi-Platform VR', price: 29.99, rating: 4.7},
+                    {name: 'Boneworks', genre: 'Action/Physics', platform: 'PC VR', price: 29.99, rating: 4.2}
+                ]);
+            }
+        }, 500);
+    </script>
+</body>
+</html>

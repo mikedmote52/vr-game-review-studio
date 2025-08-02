@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Your VR Review - {{ game_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reviewer-interface.css') }}">
+    <style>
+        .upload-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .upload-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .upload-header h1 {
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .game-info-banner {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .upload-zone {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 3px dashed #667eea;
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-zone:hover {
+            border-color: #764ba2;
+            background: rgba(255, 255, 255, 0.98);
+            transform: translateY(-2px);
+        }
+        
+        .upload-zone.dragover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #764ba2;
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .upload-text {
+            font-size: 1.2rem;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .upload-subtext {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .upload-progress {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .upload-status {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            color: #4b5563;
+        }
+        
+        .file-info {
+            background: #f3f4f6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #6b7280;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-container">
+        <a href="/new-review" class="back-button">← Back to Game Selection</a>
+        
+        <div class="upload-header">
+            <h1>🎬 Upload Your Review Video</h1>
+        </div>
+        
+        <div class="game-info-banner">
+            <h2>{{ game_name }}</h2>
+            <p style="color: #6b7280; margin: 5px 0;">Review Type: {{ review_type.replace('-', ' ').title() }}</p>
+        </div>
+        
+        <form id="uploadForm" action="/upload-review" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="game_name" value="{{ game_name }}">
+            <input type="hidden" name="review_type" value="{{ review_type }}">
+            
+            <div class="upload-zone" id="uploadZone">
+                <input type="file" id="fileInput" name="review_video" accept=".mp4,.mov,.avi,.mkv">
+                <div class="upload-icon">📹</div>
+                <div class="upload-text">Click to upload or drag and drop</div>
+                <div class="upload-subtext">MP4, MOV, AVI, MKV • Max 500MB</div>
+            </div>
+            
+            <div class="upload-progress" id="uploadProgress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="upload-status" id="uploadStatus">Preparing upload...</div>
+            </div>
+            
+            <div class="file-info" id="fileInfo">
+                <strong>Selected file:</strong> <span id="fileName"></span><br>
+                <strong>Size:</strong> <span id="fileSize"></span>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadForm = document.getElementById('uploadForm');
+        const uploadProgress = document.getElementById('uploadProgress');
+        const fileInfo = document.getElementById('fileInfo');
+        
+        // Click to upload
+        uploadZone.addEventListener('click', () => fileInput.click());
+        
+        // Drag and drop
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect();
+            }
+        });
+        
+        // File selection
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        function handleFileSelect() {
+            const file = fileInput.files[0];
+            if (!file) return;
+            
+            // Validate file type
+            const validTypes = ['video/mp4', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'];
+            if (!validTypes.includes(file.type) && !file.name.match(/\.(mp4|mov|avi|mkv)$/i)) {
+                alert('Please select a valid video file (MP4, MOV, AVI, or MKV)');
+                return;
+            }
+            
+            // Validate file size (500MB)
+            if (file.size > 500 * 1024 * 1024) {
+                alert('File size must be less than 500MB');
+                return;
+            }
+            
+            // Show file info
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            fileInfo.style.display = 'block';
+            
+            // Auto-submit the form
+            setTimeout(() => {
+                uploadProgress.style.display = 'block';
+                document.getElementById('uploadStatus').textContent = 'Uploading video...';
+                simulateUpload();
+            }, 1000);
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function simulateUpload() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 20;
+                if (progress > 100) progress = 100;
+                
+                document.getElementById('progressFill').style.width = progress + '%';
+                
+                if (progress === 100) {
+                    clearInterval(interval);
+                    document.getElementById('uploadStatus').textContent = 'Upload complete! Processing...';
+                    setTimeout(() => {
+                        uploadForm.submit();
+                    }, 1000);
+                }
+            }, 500);
+        }
+    </script>
+</body>
+</html>

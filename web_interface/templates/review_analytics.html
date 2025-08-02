@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Analytics - VR Game Review Studio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reviewer-interface.css') }}">
+</head>
+<body>
+    <div class="reviewer-dashboard">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">📊 Review Analytics</h1>
+            <a href="/" class="back-button" style="float: right;">← Back to Dashboard</a>
+        </div>
+        
+        <div class="dashboard-main">
+            <div class="section-title">Performance Overview</div>
+            <div class="action-grid">
+                <div class="action-card">
+                    <div class="card-icon">📈</div>
+                    <h3>Total Reviews</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #667eea;">{{ analytics.total_reviews or 0 }}</p>
+                </div>
+                <div class="action-card">
+                    <div class="card-icon">🎮</div>
+                    <h3>Quality Trend</h3>
+                    <p style="font-size: 1.5rem; font-weight: bold; color: #10b981;">{{ analytics.quality_trend or 'New Reviewer' }}</p>
+                </div>
+            </div>
+            
+            <div class="section-title" style="margin-top: 40px;">Genre Performance</div>
+            {% if analytics.genre_performance %}
+            <div class="reviews-grid">
+                {% for genre, stats in analytics.genre_performance.items() %}
+                <div class="review-card">
+                    <h3>{{ genre }}</h3>
+                    <p>Average Score: {{ stats.average_score }}</p>
+                    <p>Reviews: {{ stats.review_count }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No genre data yet. Complete more reviews to see analytics!</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Editor - VR Game Review Studio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reviewer-interface.css') }}">
+    <style>
+        .editor-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .editor-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .editor-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+        
+        .editor-main {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .editor-sidebar {
+            space-y: 20px;
+        }
+        
+        .sidebar-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .editor-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 15px;
+        }
+        
+        .editor-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        .editor-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .ai-suggestion {
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            border: 1px solid #667eea50;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #4b5563;
+        }
+        
+        .quality-meter {
+            margin-top: 20px;
+        }
+        
+        .meter-bar {
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+            width: 75%;
+            transition: width 0.5s ease;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #4b5563;
+        }
+        
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+        
+        @media (max-width: 768px) {
+            .editor-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <div class="editor-header">
+            <h1 style="color: #2d3748; margin: 0;">✏️ Review Structure Editor</h1>
+            <p style="color: #6b7280; margin: 10px 0 0 0;">Craft your perfect VR game review with AI assistance</p>
+        </div>
+        
+        <div class="editor-layout">
+            <div class="editor-main">
+                <div class="editor-section">
+                    <h3 class="section-title">
+                        <span>🎬</span> Opening Hook
+                    </h3>
+                    <textarea class="editor-textarea" placeholder="Start with something exciting that grabs attention..."></textarea>
+                    <div class="ai-suggestion">
+                        💡 <strong>AI Tip:</strong> Start with your most exciting moment or surprising discovery in the game!
+                    </div>
+                </div>
+                
+                <div class="editor-section">
+                    <h3 class="section-title">
+                        <span>🎮</span> Gameplay Overview
+                    </h3>
+                    <textarea class="editor-textarea" placeholder="Describe the core gameplay mechanics and VR interactions..."></textarea>
+                    <div class="ai-suggestion">
+                        💡 <strong>AI Tip:</strong> Focus on what makes the VR experience unique compared to flat-screen gaming.
+                    </div>
+                </div>
+                
+                <div class="editor-section">
+                    <h3 class="section-title">
+                        <span>👍</span> What Works Well
+                    </h3>
+                    <textarea class="editor-textarea" placeholder="List the game's strongest points..."></textarea>
+                </div>
+                
+                <div class="editor-section">
+                    <h3 class="section-title">
+                        <span>👎</span> Areas for Improvement
+                    </h3>
+                    <textarea class="editor-textarea" placeholder="Mention any issues or areas that could be better..."></textarea>
+                </div>
+                
+                <div class="editor-section">
+                    <h3 class="section-title">
+                        <span>🌟</span> Final Verdict
+                    </h3>
+                    <textarea class="editor-textarea" placeholder="Summarize your overall thoughts and recommendation..."></textarea>
+                    <div class="ai-suggestion">
+                        💡 <strong>AI Tip:</strong> End with a clear recommendation - who would enjoy this game and why?
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="saveReview()">Save Review</button>
+                    <button class="btn btn-secondary" onclick="previewReview()">Preview</button>
+                    <a href="/publish-review" class="btn btn-secondary">Publish Options</a>
+                </div>
+            </div>
+            
+            <div class="editor-sidebar">
+                <div class="sidebar-card">
+                    <h3 class="section-title">📊 Review Quality</h3>
+                    <div class="quality-meter">
+                        <div class="meter-bar">
+                            <div class="meter-fill"></div>
+                        </div>
+                        <p style="margin-top: 10px; color: #10b981; font-weight: 600;">Great job! 75%</p>
+                    </div>
+                    <ul style="margin-top: 15px; padding-left: 20px; color: #6b7280; font-size: 0.9rem;">
+                        <li>✅ Clear structure</li>
+                        <li>✅ Good energy</li>
+                        <li>⚠️ Add more VR-specific details</li>
+                        <li>💡 Consider motion sickness info</li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-card">
+                    <h3 class="section-title">🎯 Quick Tips</h3>
+                    <div style="space-y: 10px;">
+                        <p style="font-size: 0.9rem; color: #4b5563; margin-bottom: 10px;">
+                            <strong>🗣️ Speak naturally</strong><br>
+                            Imagine explaining to a friend
+                        </p>
+                        <p style="font-size: 0.9rem; color: #4b5563; margin-bottom: 10px;">
+                            <strong>🎮 Be specific</strong><br>
+                            Describe actual gameplay moments
+                        </p>
+                        <p style="font-size: 0.9rem; color: #4b5563; margin-bottom: 10px;">
+                            <strong>😊 Show enthusiasm</strong><br>
+                            Let your excitement shine through
+                        </p>
+                        <p style="font-size: 0.9rem; color: #4b5563;">
+                            <strong>🤢 Motion comfort</strong><br>
+                            Always mention VR comfort levels
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="sidebar-card">
+                    <h3 class="section-title">⏱️ Review Length</h3>
+                    <p style="font-size: 2rem; font-weight: 700; color: #667eea; text-align: center; margin: 20px 0;">
+                        ~8 mins
+                    </p>
+                    <p style="text-align: center; color: #6b7280; font-size: 0.9rem;">
+                        Perfect for YouTube!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function saveReview() {
+            // Simulate saving
+            alert('Review saved! You can continue editing anytime.');
+        }
+        
+        function previewReview() {
+            alert('Preview feature coming soon!');
+        }
+        
+        // Auto-save functionality
+        let autoSaveTimeout;
+        document.querySelectorAll('.editor-textarea').forEach(textarea => {
+            textarea.addEventListener('input', () => {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = setTimeout(() => {
+                    console.log('Auto-saving...');
+                    // In production, this would save to server
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

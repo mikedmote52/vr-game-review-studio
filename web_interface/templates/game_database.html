@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VR Game Database - VR Game Review Studio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reviewer-interface.css') }}">
+</head>
+<body>
+    <div class="reviewer-dashboard">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">🎮 VR Game Database</h1>
+            <a href="/" class="back-button" style="float: right;">← Back to Dashboard</a>
+        </div>
+        
+        <div class="dashboard-main">
+            <div class="section-title">Database Stats</div>
+            <div class="action-grid">
+                <div class="action-card">
+                    <div class="card-icon">🎯</div>
+                    <h3>Total Games</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #667eea;">{{ db_stats.total_games or 0 }}</p>
+                </div>
+                <div class="action-card">
+                    <div class="card-icon">📝</div>
+                    <h3>Total Reviews</h3>
+                    <p style="font-size: 2rem; font-weight: bold; color: #764ba2;">{{ db_stats.total_reviews or 0 }}</p>
+                </div>
+            </div>
+            
+            <div class="section-title" style="margin-top: 40px;">Trending VR Games</div>
+            {% if trending_games %}
+            <div class="reviews-grid">
+                {% for game in trending_games %}
+                <div class="review-card">
+                    <div class="review-header">
+                        <span class="review-game">{{ game.name }}</span>
+                        <span class="review-score excellent">⭐ {{ game.rating }}</span>
+                    </div>
+                    <p style="margin-top: 10px;">Review Priority: {{ game.review_priority }}/10</p>
+                    <button class="review-action" onclick="window.location.href='/new-review'">Review This Game</button>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">🎮</div>
+                <h3>No Games Yet</h3>
+                <p>Start adding games to build your database!</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Your Review</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/reviewer-interface.css') }}">
+    <style>
+        .processing-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        
+        .processing-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .processing-icon {
+            font-size: 5rem;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .processing-title {
+            font-size: 2rem;
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        
+        .processing-steps {
+            text-align: left;
+            margin: 30px 0;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            opacity: 0.5;
+            transition: opacity 0.5s ease;
+        }
+        
+        .step.active {
+            opacity: 1;
+        }
+        
+        .step.complete {
+            opacity: 1;
+        }
+        
+        .step-icon {
+            font-size: 1.5rem;
+            margin-right: 15px;
+            width: 30px;
+        }
+        
+        .step-text {
+            flex: 1;
+            color: #4b5563;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(102, 126, 234, 0.3);
+            border-radius: 50%;
+            border-top-color: #667eea;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .game-info {
+            background: #f3f4f6;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 30px;
+        }
+        
+        .action-buttons {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            margin: 0 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="processing-container">
+        <div class="processing-card">
+            <div class="processing-icon">🤖</div>
+            <h1 class="processing-title">Processing Your Review</h1>
+            <p style="color: #6b7280; margin-bottom: 30px;">
+                Our AI is analyzing your VR game review...
+            </p>
+            
+            <div class="processing-steps">
+                <div class="step" id="step1">
+                    <span class="step-icon">📹</span>
+                    <span class="step-text">Uploading video file</span>
+                    <span class="spinner" id="spinner1"></span>
+                </div>
+                <div class="step" id="step2">
+                    <span class="step-icon">🔍</span>
+                    <span class="step-text">Analyzing game content</span>
+                    <span class="spinner" id="spinner2" style="display: none;"></span>
+                </div>
+                <div class="step" id="step3">
+                    <span class="step-icon">🎮</span>
+                    <span class="step-text">Identifying VR interactions</span>
+                    <span class="spinner" id="spinner3" style="display: none;"></span>
+                </div>
+                <div class="step" id="step4">
+                    <span class="step-icon">✨</span>
+                    <span class="step-text">Generating review structure</span>
+                    <span class="spinner" id="spinner4" style="display: none;"></span>
+                </div>
+            </div>
+            
+            {% if processing_info %}
+            <div class="game-info">
+                <strong>Game:</strong> {{ processing_info.game_info.name }}<br>
+                <strong>Review Type:</strong> {{ processing_info.review_type.replace('-', ' ').title() }}
+            </div>
+            {% endif %}
+            
+            <div class="action-buttons" id="actionButtons">
+                <a href="/review-editor" class="btn">Edit Review</a>
+                <a href="/" class="btn btn-secondary">Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simulate processing steps
+        const steps = ['step1', 'step2', 'step3', 'step4'];
+        let currentStep = 0;
+        
+        function activateStep(stepIndex) {
+            if (stepIndex >= steps.length) {
+                // Processing complete
+                document.querySelector('.processing-icon').textContent = '✅';
+                document.querySelector('.processing-title').textContent = 'Processing Complete!';
+                document.getElementById('actionButtons').style.display = 'block';
+                return;
+            }
+            
+            const stepId = steps[stepIndex];
+            const step = document.getElementById(stepId);
+            const spinner = document.getElementById('spinner' + (stepIndex + 1));
+            
+            // Activate current step
+            step.classList.add('active');
+            spinner.style.display = 'inline-block';
+            
+            // Complete previous step
+            if (stepIndex > 0) {
+                const prevStep = document.getElementById(steps[stepIndex - 1]);
+                const prevSpinner = document.getElementById('spinner' + stepIndex);
+                prevStep.classList.add('complete');
+                prevSpinner.style.display = 'none';
+                prevStep.querySelector('.step-icon').textContent = '✅';
+            }
+            
+            // Move to next step after delay
+            setTimeout(() => {
+                activateStep(stepIndex + 1);
+            }, 2000 + Math.random() * 2000);
+        }
+        
+        // Start processing
+        setTimeout(() => {
+            activateStep(0);
+        }, 500);
+        
+        // In production, you would poll the server for actual processing status
+        // For demo, we're just simulating the process
+    </script>
+</body>
+</html>
