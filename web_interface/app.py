@@ -68,11 +68,16 @@ else:
     except:
         project_root = os.getcwd()
 
+# Create a dedicated video uploads folder
+VIDEO_UPLOADS_DIR = os.path.join(project_root, 'video_uploads')
+VIDEO_DATABASE_FILE = os.path.join(project_root, 'video_database.json')
+
 CONFIG = {
-    'UPLOAD_FOLDER': '/tmp/uploads' if IS_PRODUCTION else os.path.join(project_root, 'uploads'),
+    'UPLOAD_FOLDER': '/tmp/uploads' if IS_PRODUCTION else VIDEO_UPLOADS_DIR,
     'MAX_CONTENT_LENGTH': 500 * 1024 * 1024,  # 500MB max file size
     'ALLOWED_EXTENSIONS': {'mp4', 'mov', 'avi', 'mkv'},
-    'PROJECT_ROOT': project_root
+    'PROJECT_ROOT': project_root,
+    'VIDEO_DATABASE': VIDEO_DATABASE_FILE
 }
 
 app.config.update(CONFIG)
@@ -199,7 +204,8 @@ def upload_review():
         # Save uploaded file
         filename = secure_filename(file.filename)
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        filename = f"{timestamp}_{filename}"
+        game_safe = secure_filename(request.form.get('game_name', 'Unknown'))
+        filename = f"{timestamp}_{game_safe}_{filename}"
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
         
@@ -207,24 +213,35 @@ def upload_review():
         game_name = request.form.get('game_name', 'Unknown Game')
         review_type = request.form.get('review_type', 'full-review')
         
-        # Create game info object
-        game_info = {
-            'name': game_name,
-            'genre': request.form.get('game_genre', 'Unknown'),
-            'platform': request.form.get('game_platform', 'VR'),
-            'price': float(request.form.get('game_price', 0)),
-            'rating': float(request.form.get('game_rating', 0))
+        # Calculate file size
+        file_size = os.path.getsize(filepath)
+        
+        # Create video entry for database
+        video_entry = {
+            'id': f"{timestamp}_{game_safe}",
+            'filename': filename,
+            'filepath': filepath,
+            'game_name': game_name,
+            'review_type': review_type.replace('-', ' ').title(),
+            'upload_date': datetime.now().isoformat(),
+            'size': format_file_size(file_size),
+            'status': 'Processing',
+            'game_info': {
+                'name': game_name,
+                'genre': request.form.get('game_genre', 'Unknown'),
+                'platform': request.form.get('game_platform', 'VR'),
+                'price': float(request.form.get('game_price', 0)),
+                'rating': float(request.form.get('game_rating', 0))
+            }
         }
+        
+        # Save to video database
+        save_video_to_database(video_entry)
         
         # Start background processing
-        session['processing_video'] = {
-            'filepath': filepath,
-            'game_info': game_info,
-            'review_type': review_type,
-            'upload_time': datetime.now().isoformat()
-        }
+        session['processing_video'] = video_entry
         
-        flash(f'Video uploaded successfully! Processing {game_name} review...', 'success')
+        flash(f'Video uploaded successfully! Saved to: {CONFIG["UPLOAD_FOLDER"]}', 'success')
         return redirect(url_for('review_processing'))
         
     except Exception as e:
@@ -383,6 +400,58 @@ def parent_dashboard():
                              activity={},
                              safety={},
                              progress={})
+
+@app.route('/video-library')
+def video_library():
+    """Display all uploaded videos"""
+    try:
+        videos = load_video_database()
+        total_size = calculate_total_video_size(videos)
+        
+        return render_template('video_library.html',
+                             videos=videos,
+                             storage_path=CONFIG['UPLOAD_FOLDER'],
+                             total_size=total_size)
+    except Exception as e:
+        flash(f'Error loading video library: {str(e)}', 'error')
+        return render_template('video_library.html',
+                             videos=[],
+                             storage_path=CONFIG['UPLOAD_FOLDER'],
+                             total_size='0 MB')
+
+@app.route('/video/<video_id>')
+def video_details(video_id):
+    """Show detailed information about a specific video"""
+    videos = load_video_database()
+    video = next((v for v in videos if v['id'] == video_id), None)
+    
+    if not video:
+        flash('Video not found', 'error')
+        return redirect(url_for('video_library'))
+    
+    return render_template('video_details.html', video=video)
+
+@app.route('/api/delete-video/<video_id>', methods=['DELETE'])
+def delete_video(video_id):
+    """Delete a video and remove from database"""
+    try:
+        videos = load_video_database()
+        video = next((v for v in videos if v['id'] == video_id), None)
+        
+        if not video:
+            return jsonify({'success': False, 'error': 'Video not found'})
+        
+        # Delete the file
+        if os.path.exists(video['filepath']):
+            os.remove(video['filepath'])
+        
+        # Remove from database
+        videos = [v for v in videos if v['id'] != video_id]
+        save_video_database(videos)
+        
+        return jsonify({'success': True})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
 
 # Helper functions
 def get_data_path(relative_path):
@@ -745,6 +814,51 @@ def is_this_week(timestamp_str):
         return timestamp >= week_start
     except:
         return False
+
+# Video database management functions
+def load_video_database():
+    """Load video database from JSON file"""
+    try:
+        if os.path.exists(CONFIG['VIDEO_DATABASE']):
+            with open(CONFIG['VIDEO_DATABASE'], 'r') as f:
+                return json.load(f)
+    except Exception as e:
+        print(f"Error loading video database: {e}")
+    return []
+
+def save_video_database(videos):
+    """Save video database to JSON file"""
+    try:
+        os.makedirs(os.path.dirname(CONFIG['VIDEO_DATABASE']), exist_ok=True)
+        with open(CONFIG['VIDEO_DATABASE'], 'w') as f:
+            json.dump(videos, f, indent=2)
+    except Exception as e:
+        print(f"Error saving video database: {e}")
+
+def save_video_to_database(video_entry):
+    """Add a new video entry to the database"""
+    videos = load_video_database()
+    videos.append(video_entry)
+    save_video_database(videos)
+
+def format_file_size(size_in_bytes):
+    """Format file size in human-readable format"""
+    for unit in ['B', 'KB', 'MB', 'GB']:
+        if size_in_bytes < 1024.0:
+            return f"{size_in_bytes:.1f} {unit}"
+        size_in_bytes /= 1024.0
+    return f"{size_in_bytes:.1f} TB"
+
+def calculate_total_video_size(videos):
+    """Calculate total size of all videos"""
+    total_bytes = 0
+    for video in videos:
+        if os.path.exists(video.get('filepath', '')):
+            try:
+                total_bytes += os.path.getsize(video['filepath'])
+            except:
+                pass
+    return format_file_size(total_bytes)
 
 # Always configure the app, even if not running as main
 print("🎮 VR Game Review Studio starting...")
