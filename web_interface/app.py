@@ -453,6 +453,110 @@ def delete_video(video_id):
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 
+@app.route('/video-editor/<video_id>')
+def video_editor(video_id):
+    """AI-powered video editing interface"""
+    videos = load_video_database()
+    video = next((v for v in videos if v['id'] == video_id), None)
+    
+    if not video:
+        flash('Video not found', 'error')
+        return redirect(url_for('video_library'))
+    
+    return render_template('video_editor.html', video=video, video_id=video_id)
+
+@app.route('/api/process-video-workflow', methods=['POST'])
+def process_video_workflow():
+    """Start AI video processing workflow"""
+    try:
+        data = request.get_json()
+        video_id = data.get('video_id')
+        workflow = data.get('workflow')
+        
+        # Get video from database
+        videos = load_video_database()
+        video = next((v for v in videos if v['id'] == video_id), None)
+        
+        if not video:
+            return jsonify({'success': False, 'error': 'Video not found'})
+        
+        # Import video processing engine
+        try:
+            from video_processing import VideoWorkflowEngine
+            engine = VideoWorkflowEngine()
+            
+            # Create output directory
+            output_dir = os.path.join(CONFIG['PROJECT_ROOT'], 'video_outputs')
+            os.makedirs(output_dir, exist_ok=True)
+            
+            # Start workflow (in production, this would be async)
+            import asyncio
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+            workflow_state = loop.run_until_complete(
+                engine.process_gameplay_video(video['filepath'], workflow, output_dir)
+            )
+            
+            loop.close()
+            
+            return jsonify({
+                'success': True,
+                'workflow_id': workflow_state['id'],
+                'status': workflow_state['status']
+            })
+            
+        except ImportError:
+            # Fallback for demo without video processing libraries
+            return jsonify({
+                'success': True,
+                'workflow_id': 'demo_' + datetime.now().strftime('%Y%m%d_%H%M%S'),
+                'status': 'demo_mode',
+                'message': 'Video processing in demo mode - install ffmpeg and dependencies for full functionality'
+            })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+@app.route('/api/workflow-status/<workflow_id>')
+def workflow_status(workflow_id):
+    """Get status of video processing workflow"""
+    try:
+        # In demo mode, simulate progress
+        if workflow_id.startswith('demo_'):
+            import random
+            steps = ['analyze', 'extract_highlights', 'create_edits', 'optimize', 'finalize']
+            completed = random.randint(1, len(steps))
+            
+            return jsonify({
+                'workflow_id': workflow_id,
+                'status': 'completed' if completed == len(steps) else 'processing',
+                'steps_completed': steps[:completed],
+                'outputs': {
+                    'tiktok_final': {
+                        'path': 'demo/tiktok_video.mp4',
+                        'specs': {'resolution': '1080x1920', 'max_duration': 60},
+                        'metadata': {'file_size': 15000000}
+                    },
+                    'youtube_final': {
+                        'path': 'demo/youtube_video.mp4',
+                        'specs': {'resolution': '1920x1080', 'max_duration': 600},
+                        'metadata': {'file_size': 50000000}
+                    }
+                } if completed == len(steps) else {}
+            })
+        
+        # Real workflow status
+        from video_processing import VideoWorkflowEngine
+        engine = VideoWorkflowEngine()
+        output_dir = os.path.join(CONFIG['PROJECT_ROOT'], 'video_outputs')
+        
+        state = engine.get_workflow_status(workflow_id, output_dir)
+        return jsonify(state or {'error': 'Workflow not found'})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
 # Helper functions
 def get_data_path(relative_path):
     """Get appropriate file path for production or development"""

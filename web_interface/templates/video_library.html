@@ -156,6 +156,7 @@
                     <div class="video-meta">Status: {{ video.status }}</div>
                     <div class="video-path">{{ video.filename }}</div>
                     <div class="video-actions">
+                        <a href="/video-editor/{{ video.id }}" class="btn-small btn-view">🎬 AI Edit</a>
                         <a href="/video/{{ video.id }}" class="btn-small btn-view">View Details</a>
                         <button class="btn-small btn-delete" onclick="deleteVideo('{{ video.id }}')">Delete</button>
                     </div>

@@ -8,3 +8,15 @@ click==8.1.7
 itsdangerous==2.1.2
 blinker==1.7.0
 gunicorn==21.2.0
+
+# Video Processing Dependencies
+opencv-python==4.8.1.78
+numpy==1.24.3
+Pillow==10.1.0
+moviepy==1.0.3
+ffmpeg-python==0.2.0
+
+# AI/ML Dependencies (optional - for full functionality)
+# openai-whisper==20231117
+# torch==2.1.0
+# transformers==4.35.0
